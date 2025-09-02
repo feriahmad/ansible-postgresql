@@ -72,12 +72,52 @@ sudo chmod 755 /var/backups/postgresql
 echo "🔧 Configuring PostgreSQL..."
 sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = 'localhost'/" /etc/postgresql/16/main/postgresql.conf 2>/dev/null || true
 
-# Configure authentication
-sudo sed -i "s/local   all             postgres                                peer/local   all             postgres                                md5/" /etc/postgresql/16/main/pg_hba.conf 2>/dev/null || true
+# Configure authentication - allow both peer and md5
+echo "🔧 Configuring authentication..."
+sudo cp /etc/postgresql/16/main/pg_hba.conf /etc/postgresql/16/main/pg_hba.conf.backup 2>/dev/null || true
+
+# Add both peer and md5 authentication for postgres user
+sudo tee /etc/postgresql/16/main/pg_hba.conf > /dev/null << 'EOF'
+# PostgreSQL Client Authentication Configuration File
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             postgres                                peer
+local   all             postgres                                md5
+local   all             all                                     peer
+local   all             all                                     md5
+
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+local   replication     all                                     peer
+host    replication     all             127.0.0.1/32            md5
+host    replication     all             ::1/128                 md5
+EOF
 
 # Restart PostgreSQL to apply configuration
 echo "🔄 Restarting PostgreSQL to apply configuration..."
 sudo systemctl restart postgresql
+
+# Wait for PostgreSQL to start
+sleep 3
+
+# Test connection as postgres user (peer authentication)
+echo "🔍 Testing postgres user connection..."
+if sudo -u postgres psql -c "SELECT 1;" >/dev/null 2>&1; then
+    echo "✅ Postgres user connection successful"
+else
+    echo "⚠️  Postgres user connection failed, trying to fix..."
+    
+    # Reset to default peer authentication for postgres
+    sudo sed -i '0,/local   all             postgres/s//local   all             postgres                                peer/' /etc/postgresql/16/main/pg_hba.conf
+    sudo systemctl restart postgresql
+    sleep 3
+fi
 
 echo ""
 echo "✅ PostgreSQL 16.2 installation completed successfully!"

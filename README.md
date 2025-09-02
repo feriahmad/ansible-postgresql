@@ -194,6 +194,29 @@ sudo tail -f /var/log/postgresql/postgresql-16-main.log
 sudo tail -f /var/backups/postgresql/backup.log
 ```
 
+### Masalah Login PostgreSQL
+Jika tidak bisa login ke PostgreSQL setelah instalasi:
+
+```bash
+# Jalankan script perbaikan login
+chmod +x fix_postgres_login.sh
+./fix_postgres_login.sh
+
+# Atau perbaiki manual
+sudo systemctl restart postgresql
+sudo -u postgres psql
+```
+
+**Cara login yang benar:**
+```bash
+# Menggunakan peer authentication (sebagai user postgres)
+sudo -u postgres psql
+
+# Menggunakan password authentication
+psql -h localhost -U postgres -d postgres
+# Password: PostgreSQL123!
+```
+
 ## File Structure
 
 ```
@@ -206,6 +229,7 @@ ansible-postgresql/
 ├── ansible.cfg                # Konfigurasi Ansible
 ├── backup_postgresql.sh       # Script backup manual
 ├── fix_backup_data.sh         # Script perbaikan data corrupt
+├── fix_postgres_login.sh      # Script perbaikan masalah login PostgreSQL
 ├── install_postgresql_16.2.sh # Script install PostgreSQL 16.2 spesifik
 ├── install_postgresql_16.4.sh # Script install PostgreSQL 16.4 spesifik
 ├── restore_postgresql.sh      # Script restore dengan version handling
