@@ -154,19 +154,26 @@ MODIFIED_FILE="/tmp/external_restore_modified_$(date +%s).sql"
 log_message "Membuat file backup yang dimodifikasi untuk kompatibilitas..."
 
 # Modifikasi backup untuk kompatibilitas
-cat "$WORKING_FILE" | \
-    # Hapus SET statements yang mungkin bermasalah
-    sed '/^SET lock_timeout = 0;/d' | \
-    sed '/^SET idle_in_transaction_session_timeout = 0;/d' | \
-    sed '/^SET row_security = off;/d' | \
-    # Perbaiki JSON format yang corrupt
-    sed -E 's/"([0-9]{1,2}):([0-9])"/"0\1:0\20"/g' | \
-    sed -E 's/"([0-9]{2}):([0-9])"/"0\1:0\20"/g' | \
-    # Hapus comment yang mungkin bermasalah
-    sed '/^--.*$/d' | \
-    # Perbaiki ownership jika diminta
-    $(if [[ "$OWNER_FIX" == true ]]; then echo "sed 's/OWNER TO [a-zA-Z_][a-zA-Z0-9_]*/OWNER TO postgres/g'"; else echo "cat"; fi) \
-    > "$MODIFIED_FILE"
+if [[ "$OWNER_FIX" == true ]]; then
+    cat "$WORKING_FILE" | \
+        sed '/^SET lock_timeout = 0;/d' | \
+        sed '/^SET idle_in_transaction_session_timeout = 0;/d' | \
+        sed '/^SET row_security = off;/d' | \
+        sed -E 's/"([0-9]{1,2}):([0-9])"/"0\1:0\20"/g' | \
+        sed -E 's/"([0-9]{2}):([0-9])"/"0\1:0\20"/g' | \
+        sed '/^--.*$/d' | \
+        sed 's/OWNER TO [a-zA-Z_][a-zA-Z0-9_]*/OWNER TO postgres/g' \
+        > "$MODIFIED_FILE"
+else
+    cat "$WORKING_FILE" | \
+        sed '/^SET lock_timeout = 0;/d' | \
+        sed '/^SET idle_in_transaction_session_timeout = 0;/d' | \
+        sed '/^SET row_security = off;/d' | \
+        sed -E 's/"([0-9]{1,2}):([0-9])"/"0\1:0\20"/g' | \
+        sed -E 's/"([0-9]{2}):([0-9])"/"0\1:0\20"/g' | \
+        sed '/^--.*$/d' \
+        > "$MODIFIED_FILE"
+fi
 
 # Buat roles yang diperlukan jika diminta
 if [[ "$ROLE_FIX" == true && -n "$ROLES_IN_BACKUP" ]]; then
