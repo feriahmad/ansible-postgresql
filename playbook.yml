@@ -34,12 +34,38 @@
         state: present
         update_cache: yes
 
+    - name: Remove existing PostgreSQL installations
+      apt:
+        name:
+          - postgresql*
+          - postgresql-client*
+          - postgresql-contrib*
+        state: absent
+        purge: yes
+      ignore_errors: true
+
+    - name: Clean PostgreSQL data directory
+      file:
+        path: /var/lib/postgresql
+        state: absent
+      ignore_errors: true
+
+    - name: Clean PostgreSQL config directory
+      file:
+        path: /etc/postgresql
+        state: absent
+      ignore_errors: true
+
+    - name: Update apt cache after cleanup
+      apt:
+        update_cache: yes
+
     - name: Install PostgreSQL 16.4 (specific version)
       apt:
         name:
-          - postgresql-16=16.4-1.pgdg20.04+1
-          - postgresql-client-16=16.4-1.pgdg20.04+1
-          - postgresql-contrib-16=16.4-1.pgdg20.04+1
+          - postgresql-16=16.4-1.pgdg24.04+1
+          - postgresql-client-16=16.4-1.pgdg24.04+1
+          - postgresql-contrib-16=16.4-1.pgdg24.04+1
         state: present
         allow_downgrade: yes
 
