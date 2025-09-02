@@ -1,9 +1,0 @@
----
-# PostgreSQL Configuration Variables
-postgres_user: "{{ lookup('env', 'POSTGRES_USER') | default('postgres') }}"
-postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') | default('changeme') }}"
-postgres_db: "{{ lookup('env', 'POSTGRES_DB') | default('postgres') }}"
-
-# Backup Configuration Variables
-backup_path: "{{ lookup('env', 'BACKUP_PATH') | default('/var/backups/postgresql') }}"
-backup_retention_days: "{{ lookup('env', 'BACKUP_RETENTION_DAYS') | default('7') }}"
