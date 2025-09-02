@@ -59,11 +59,8 @@
       tags: service
 
     - name: Set PostgreSQL user password
-      postgresql_user:
-        name: "{{ postgres_user }}"
-        password: "{{ postgres_password }}"
-        role_attr_flags: SUPERUSER,CREATEDB,CREATEROLE,LOGIN
-      become_user: postgres
+      shell: |
+        sudo -u postgres psql -c "ALTER USER postgres PASSWORD '{{ postgres_password }}';"
       tags: configure
 
     - name: Create backup directory

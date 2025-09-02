@@ -142,6 +142,23 @@ sudo tail -f /var/backups/postgresql/backup.log
 sudo -u postgres crontab -l
 ```
 
+### Common Issues
+
+#### Privilege Escalation Error
+If you encounter privilege escalation errors when becoming the postgres user, the playbook uses a shell command approach instead of the postgresql_user module to avoid ACL issues on some systems.
+
+#### Environment Variables Not Loading
+Ensure your `.env` file is in the same directory as the playbook and contains all required variables:
+```bash
+cat .env
+```
+
+#### PostgreSQL Service Not Starting
+Check if there are any conflicting PostgreSQL installations:
+```bash
+sudo systemctl list-units --type=service | grep postgres
+```
+
 ## File Structure
 
 ```
