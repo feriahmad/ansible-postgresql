@@ -139,6 +139,39 @@ chmod +x fix_backup_data.sh
 - Trailing comma di JSON
 - Boolean value yang corrupt
 
+#### Restore Backup dari Server Eksternal
+Untuk backup dari server lain dengan konfigurasi berbeda:
+
+```bash
+# Script khusus untuk backup eksternal
+chmod +x restore_external_backup.sh
+
+# Restore dengan semua perbaikan otomatis
+./restore_external_backup.sh -f -s -o -r backup_file.sql
+
+# Restore ke database baru dengan cleanup
+./restore_external_backup.sh -c -d external_db -f -s backup_file.sql
+
+# Verbose mode untuk troubleshooting
+./restore_external_backup.sh -v -f -s -o backup_file.sql
+```
+
+**Fitur script eksternal:**
+- **`-f`** : Force restore (abaikan warning)
+- **`-s`** : Skip errors (lanjutkan meski ada error)
+- **`-o`** : Fix ownership issues (ubah owner ke postgres)
+- **`-r`** : Create missing roles otomatis
+- **`-c`** : Clean database sebelum restore
+- **`-v`** : Verbose output untuk debugging
+
+**Masalah yang ditangani:**
+- Perbedaan versi PostgreSQL
+- User/role yang tidak ada
+- Ownership issues
+- JSON format corrupt
+- SET statements yang tidak kompatibel
+- Extensions yang berbeda
+
 ## Troubleshooting
 
 ### Cek Status PostgreSQL
@@ -169,5 +202,6 @@ ansible-postgresql/
 ├── backup_postgresql.sh       # Script backup manual
 ├── fix_backup_data.sh         # Script perbaikan data corrupt
 ├── restore_postgresql.sh      # Script restore dengan version handling
+├── restore_external_backup.sh # Script restore backup dari server eksternal
 ├── playbook.yml               # Main playbook
 └── README.md                  # File ini
