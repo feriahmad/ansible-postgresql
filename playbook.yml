@@ -1,5 +1,5 @@
 ---
-- name: Install PostgreSQL 16.3 on Ubuntu 24.04
+- name: Install PostgreSQL 16.4 on Ubuntu 24.04
   hosts: localhost
   become: yes
   vars:
@@ -34,13 +34,14 @@
         state: present
         update_cache: yes
 
-    - name: Install PostgreSQL 16
+    - name: Install PostgreSQL 16.4 (specific version)
       apt:
         name:
-          - postgresql-16
-          - postgresql-client-16
-          - postgresql-contrib-16
+          - postgresql-16=16.4-1.pgdg20.04+1
+          - postgresql-client-16=16.4-1.pgdg20.04+1
+          - postgresql-contrib-16=16.4-1.pgdg20.04+1
         state: present
+        allow_downgrade: yes
 
     - name: Ensure PostgreSQL service is started and enabled
       systemd:
