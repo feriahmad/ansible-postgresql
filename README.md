@@ -29,9 +29,9 @@ Script Ansible sederhana untuk install PostgreSQL 16 di Ubuntu 24.04 dengan back
    # Untuk PostgreSQL versi terbaru
    ansible-playbook playbook.yml
    
-   # Atau untuk PostgreSQL 16.4 spesifik (recommended untuk restore backup eksternal)
-   chmod +x install_postgresql_16.4.sh
-   ./install_postgresql_16.4.sh
+   # Atau untuk PostgreSQL 16.2 spesifik (recommended untuk restore backup eksternal)
+   chmod +x install_postgresql_16.2.sh
+   ./install_postgresql_16.2.sh
    ```
 
 ## Informasi Login
@@ -206,6 +206,7 @@ ansible-postgresql/
 ├── ansible.cfg                # Konfigurasi Ansible
 ├── backup_postgresql.sh       # Script backup manual
 ├── fix_backup_data.sh         # Script perbaikan data corrupt
+├── install_postgresql_16.2.sh # Script install PostgreSQL 16.2 spesifik
 ├── install_postgresql_16.4.sh # Script install PostgreSQL 16.4 spesifik
 ├── restore_postgresql.sh      # Script restore dengan version handling
 ├── restore_external_backup.sh # Script restore backup dari server eksternal
